@@ -1,0 +1,15 @@
+{
+  "include": ["src"],  // Defines the main source directory
+  "exclude": ["**/node_modules", "**/__pycache__", "**/.*"],
+  "strict": ["src/main.py"],  // Enables strict mode for specific files
+  "reportUnknownMemberType": "none",  // Disables the UnknownMemberType error
+  "reportUnknownVariableType": "none",
+  "typeCheckingMode": "strict",
+  "reportMissingTypeStubs": "none",
+  "reportUnknownParameterType":"none",
+  "reportMissingParameterType":"none",
+  "reportUnknownArgumentType":"none",
+  "pythonVersion": "3.9",
+  "venvPath": ".venv",
+  "stubPath": "./typings"
+}

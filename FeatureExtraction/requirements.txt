@@ -1,0 +1,6 @@
+# please make sure you have already a pytorch install that is cuda enabled!
+librosa>=0.11.0
+matplotlib>=3.10.3
+PyQt5
+seaborn>=0.13.2
+tqdm>=4.67.1
