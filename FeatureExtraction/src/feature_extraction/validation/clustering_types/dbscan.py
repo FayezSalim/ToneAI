@@ -20,7 +20,7 @@ def dbscan_clustering(df_features:DataFrame,df_normalized:DataFrame):
     pca_results = pca.fit_transform(df_normalized)
 
     # Apply DBSCAN clustering (adjust parameters based on data distribution)
-    dbscan = DBSCAN(eps=0.3, min_samples=2)  # 'eps' defines cluster density sensitivity
+    dbscan = DBSCAN(eps=0.45, min_samples=2)  # 'eps' defines cluster density sensitivity
     df_features["Cluster"] = dbscan.fit_predict(df_normalized)
 
     # Create 3D scatter plot
@@ -49,7 +49,7 @@ def dbscan_clustering(df_features:DataFrame,df_normalized:DataFrame):
     plt.savefig("dbscan_3d_clustering.png", dpi=300, bbox_inches="tight")
     
 
-    df_features.to_csv("dbscan_features.csv",columns=['0','Cluster'], index=False)  # Save features with cluster labels for debugging
+    df_features.to_csv("dbscan_features.csv",columns=['clip_name','Cluster'], index=False)  # Save features with cluster labels for debugging
     
     # Count noise points (-1 cluster)
     num_noise_points = (df_features["Cluster"] == -1).sum()

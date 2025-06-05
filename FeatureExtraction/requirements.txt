@@ -4,3 +4,4 @@ matplotlib>=3.10.3
 PyQt5
 seaborn>=0.13.2
 tqdm>=4.67.1
+pyloudnorm>=0.1.1
