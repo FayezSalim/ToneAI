@@ -2658,7 +2658,8 @@ export interface HelixModel {
     synopsis?: string;
     image: string;
     image_native?: string;
-    params: Array<{ [key: string]: null | string }[] | { [key: string]: null | string }>;
+    //params: Array<{ [key: string]: null | string }[] | { [key: string]: null | string }>;
+    parameters?: Array<HelixModelParam<string | number | boolean>>;
     hidden?: string;
     stereo?: boolean;
     bass?: boolean;
@@ -2670,6 +2671,14 @@ export interface Subcategory {
     models: HelixModel[];
 }
 
+export interface HelixModelParam<T> {
+    name: string;
+    id: string;
+    valueType: number;
+    min?: T;
+    max?: T;
+    defaultValue?: T;
+}
 
 
 const helixModelsInfoMap = new Map<string, Pick<HelixModel, "basedOn" | "synopsis" | "notableUsers">>();
@@ -2712,7 +2721,7 @@ for (var h of helix) {
             m.basedOn = modelInfo.basedOn;
             m.synopsis = modelInfo.synopsis;
             m.notableUsers = modelInfo.notableUsers;
-        }
+        }   
     }
 
 }
@@ -2725,6 +2734,59 @@ const subsetOfHelix: Helix[] = helix.filter(h => {
         return true;
     }
 });
+
+
+const cabWithIrs = ["cabmicirs", "cab", "cabmicirswithpan"];
+
+for (const h of subsetOfHelix) {
+    const modelDataFromSoftware: any[] = [];
+    if (h.name === "Cab") {
+        for (var cab of cabWithIrs) {
+            try {
+                modelDataFromSoftware.push(...JSON.parse(fs.readFileSync(`C:\\Program Files (x86)\\Line6\\HX Edit\\res\\` + `${cab}.models`, "utf-8")));
+            } catch (e) {
+                console.warn(`Could not read ${cab}.models file:`, e);
+            }
+        }
+    } else {
+        modelDataFromSoftware.push(...JSON.parse(fs.readFileSync(`C:\\Program Files (x86)\\Line6\\HX Edit\\res\\` + `${h.name.toLowerCase()}.models`, "utf-8")));
+    }
+
+    for (sub of h.subcategories || []) {
+
+        for (const m of sub.models) {
+            const modelInfoFromSoftware = modelDataFromSoftware.find((model: any) => model.symbolicID === m.id || model.name === m.name);
+            if (modelInfoFromSoftware) {
+                m.parameters = [];
+                if (modelInfoFromSoftware.params) {
+                    for (const param of modelInfoFromSoftware.params) {
+                        m.parameters.push(GetHelixModelParam(param));
+                    }
+                }
+            } else {
+                console.warn(`Model ${m.id} not found in ${h.name} subcategory ${sub.name}`);
+            }
+        }
+    }
+
+    if(!h.models){
+        continue; // skip if no models
+    }
+
+    for (const m of h.models) {
+        const modelInfoFromSoftware = modelDataFromSoftware.find((model: any) => model.symbolicID === m.id || model.name === m.name);
+        if (modelInfoFromSoftware) {
+            m.parameters = [];
+            if (modelInfoFromSoftware.params) {
+                for (const param of modelInfoFromSoftware.params) {
+                    m.parameters.push(GetHelixModelParam(param));
+                }
+            }
+        } else {
+            console.warn(`Model ${m.id} not found in ${h.name}`);
+        }
+    }
+}
 
 fs.writeFileSync("helix_models_to_process.json", JSON.stringify(subsetOfHelix, null, 2), "utf-8");
 
@@ -2752,4 +2814,56 @@ function addHelixModelInfo(modelData: any, helixModelsInfoMap: Map<string, any>)
         }
 
     }
+}
+
+function GetHelixModelParam(paramInfo: any): HelixModelParam<string | number | boolean> {
+
+    if (!paramInfo || !paramInfo.name || !paramInfo.symbolicID || paramInfo.valueType == undefined) {
+        console.log("Invalid parameter info provided");
+    }
+
+    var helixModelParam: HelixModelParam<string | number | boolean>;
+
+    switch (paramInfo.valueType) {
+        case 0://integer
+            helixModelParam = {
+                name: paramInfo.name,
+                id: paramInfo.symbolicID,
+                valueType: paramInfo.valueType,
+                min: paramInfo.min !== undefined ? parseInt(paramInfo.min, 10) : undefined,
+                max: paramInfo.max !== undefined ? parseInt(paramInfo.max, 10) : undefined,
+                defaultValue: paramInfo.default !== undefined ? parseInt(paramInfo.default, 10) : undefined
+            };
+            //check if paramInfo.default is a decimal
+            if (paramInfo.default && !Number.isInteger(paramInfo.default) || (paramInfo.min && !Number.isInteger(paramInfo.min)) ||
+                (paramInfo.max && !Number.isInteger(paramInfo.max))) {
+                console.warn(`Default value for ${paramInfo.name} is not an integer: ${paramInfo.default}`);
+            }
+            break;
+        case 1: // float
+            helixModelParam = {
+                name: paramInfo.name,
+                id: paramInfo.symbolicID,
+                valueType: paramInfo.valueType,
+                min: paramInfo.min !== undefined ? parseFloat(paramInfo.min) : undefined,
+                max: paramInfo.max !== undefined ? parseFloat(paramInfo.max) : undefined,
+                defaultValue: paramInfo.default !== undefined ? parseFloat(paramInfo.default) : undefined
+            };
+            break;
+        case 2: // boolean
+            helixModelParam = {
+                name: paramInfo.name,
+                id: paramInfo.symbolicID,
+                valueType: paramInfo.valueType,
+                min: paramInfo.min !== undefined ? Boolean(paramInfo.min) : undefined,
+                max: paramInfo.max !== undefined ? Boolean(paramInfo.max) : undefined,
+                defaultValue: paramInfo.default !== undefined ? Boolean(paramInfo.default) : undefined
+            };
+            break;
+        default: // string
+            console.log("Unhandled valueType:", paramInfo.valueType);
+
+
+    }
+    return helixModelParam;
 }
