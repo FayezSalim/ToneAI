@@ -3,25 +3,12 @@ import glob
 import os
 import random
 import librosa
-from matplotlib import pyplot as plt
 import numpy as np
 import tqdm
 from pyloudnorm import Meter
 
 
 def enumerate_clips(audio_directory):
-    """
-    Enumerate audio clips in the specified directory.
-
-    Parameters:
-    audio_directory (str): Path to the directory containing audio clips.
-
-    Returns:
-    clip_name (str): Name of the audio clip.
-    clip_data (ndarray): Audio data of the clip.
-    sampling_rate (int): Sampling rate of the audio clip.
-    """
-
     print(f"Enumerating clips in directory: {audio_directory}")
 
     # Ensure the directory exists
@@ -36,9 +23,6 @@ def enumerate_clips(audio_directory):
         for clipData,sampling_rate in selectRandomClips(file):  
             sub_clip+=1
             yield os.path.basename(file)+ f"_{sub_clip}", clipData, sampling_rate
-            
-        
-
 
 
 def selectRandomClips(file_path:str, num_clips=6, clip_duration=15):
@@ -82,18 +66,8 @@ def selectRandomClips(file_path:str, num_clips=6, clip_duration=15):
 
 
 def preprocess_audio(file_data,sampling_rate):
-    """
-    Preprocess audio file by removing silence and normalizing volume.
 
-    Parameters:
-    file_path (str): Path to the audio file.
-    clip_duration (int): Duration of each clip in seconds.
-
-    Returns:
-    list: List of preprocessed audio clips.
-    """
-
-        #preprocessing
+    #preprocessing
 
     #import scipy.signal
 

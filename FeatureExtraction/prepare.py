@@ -1,12 +1,9 @@
-
-
 import os
 from typing import Any
 import numpy as np
 import pandas as pd
-
-from feature_extraction.enumerate_clips import enumerate_clips
-from feature_extraction.extract_features import extract_aggregated_features
+from enumerate_clips import enumerate_clips
+from extract_features import extract_aggregated_features
 
 
 def prepare_aggregated_feature_dataframe(audioSourceDirectory:str, useFreshData:bool=False):

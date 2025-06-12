@@ -49,7 +49,7 @@ def dbscan_clustering(df_features:DataFrame,df_normalized:DataFrame):
     plt.savefig("dbscan_3d_clustering.png", dpi=300, bbox_inches="tight")
     
 
-    df_features.to_csv("dbscan_features.csv",columns=['clip_name','Cluster'], index=False)  # Save features with cluster labels for debugging
+    df_features.to_csv("experiment_results/dbscan_features.csv",columns=['clip_name','Cluster'], index=False)  # Save features with cluster labels for debugging
     
     # Count noise points (-1 cluster)
     num_noise_points = (df_features["Cluster"] == -1).sum()

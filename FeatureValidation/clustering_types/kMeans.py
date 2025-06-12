@@ -46,7 +46,7 @@ def kmeans_clustering(df_features:DataFrame,df_normalized:DataFrame):
     plt.colorbar(sc, label="Cluster Label")
 
     # Save the visualization
-    plt.savefig("kmeans_3d_clustering_with_labels.png", dpi=300, bbox_inches="tight")
+    plt.savefig("experiment_results/kmeans_3d_clustering_with_labels.png", dpi=300, bbox_inches="tight")
     plt.show()
 
     print("3D Clustering visualization saved as 'kmeans_3d_clustering_with_labels.png'!")

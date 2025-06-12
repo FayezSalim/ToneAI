@@ -2,7 +2,7 @@
 import seaborn as sns
 import matplotlib.pyplot as plt
 import seaborn as sns
-from feature_extraction.prepare_feature_dataframe import prepare_aggregated_feature_dataframe
+from FeatureExtraction import prepare_aggregated_feature_dataframe
 
 
 def performCorrelationAnalysis(audioSourceDirectory:str,useFreshData:bool=False):
@@ -11,7 +11,7 @@ def performCorrelationAnalysis(audioSourceDirectory:str,useFreshData:bool=False)
     # Compute correlation matrix across the dataset
     df.drop(columns=["clip_name"], inplace=True)  # Drop non-numeric column for correlation analysis
     corr_matrix = df.corr()
-    df.corr().to_csv("correlation_matrix.csv", index=True)
+    df.corr().to_csv("experiment_results/correlation_matrix.csv", index=True)
 
     # Visualize correlation matrix
     sns.set_theme(font_scale=1.2)
@@ -20,7 +20,7 @@ def performCorrelationAnalysis(audioSourceDirectory:str,useFreshData:bool=False)
     sns.heatmap(corr_matrix, annot=True, cmap="coolwarm", fmt=".2f", linewidths=0.5)
 
 
-    plt.savefig("correlation_heatmap.png", dpi=300, bbox_inches="tight")
+    plt.savefig("experiment_results/correlation_heatmap.png", dpi=300, bbox_inches="tight")
     plt.close()  # Closes the plot to avoid redundant rendering
 
     # harmonic_means = [feature["harmonic_mean"] for feature in feature_list]
@@ -44,7 +44,7 @@ def performCorrelationAnalysis(audioSourceDirectory:str,useFreshData:bool=False)
     # plt.xticks(rotation=45)  # Rotate labels if filenames are long
 
     # # Save as PNG
-    # plt.savefig("harmonic_percussive_analysis.png", dpi=300, bbox_inches="tight")
+    # plt.savefig("experiment_results/harmonic_percussive_analysis.png", dpi=300, bbox_inches="tight")
     # plt.close()  # Close plot to prevent redundant rendering
 
 

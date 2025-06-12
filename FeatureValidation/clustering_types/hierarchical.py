@@ -27,7 +27,7 @@ def hierarchical_clustering(df_features:DataFrame,df_normalized:DataFrame):
 
     df_features["Cluster"] = cluster_labels
 
-    df_features.to_csv(f"hierarchical_clustered_features_AgglomerativeClustering.csv", index=False)
+    df_features.to_csv(f"experiment_results/hierarchical_clustered_features_AgglomerativeClustering.csv", index=False)
 
     # Plot dendrogram
     plt.figure(figsize=(48, 32))
@@ -35,7 +35,7 @@ def hierarchical_clustering(df_features:DataFrame,df_normalized:DataFrame):
     plt.title("Hierarchical Clustering Dendrogram ")
     plt.xlabel("Songs")
     plt.ylabel("Distance")
-    plt.savefig(f"hierarchical_clustering_AgglomerativeClustering.png", dpi=300, bbox_inches="tight")    
+    plt.savefig(f"experiment_results/hierarchical_clustering_AgglomerativeClustering.png", dpi=300, bbox_inches="tight")    
     #plt.show()
 
     #-------------------fcluster

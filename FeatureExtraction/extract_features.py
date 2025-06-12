@@ -1,9 +1,11 @@
+from typing import Any, Dict, Union
 import librosa
 import numpy as np
 import numpy as np
 from scipy.signal import find_peaks
 
-def extract_features(clipData, sampling_rate):
+
+def extract_features(clipData, sampling_rate) -> Dict[str, np.floating]:
     
     features = {}
 
@@ -53,7 +55,8 @@ def extract_features(clipData, sampling_rate):
 
     ### MFCC & Chroma Features ###
     mfccs = librosa.feature.mfcc(y=clipData, sr=sampling_rate)
-    features["mfccs"] = mfccs
+    features["mfccs0"] = mfccs[0]
+    features["mfccs1"]= mfccs[1]
     features["chroma"] = librosa.feature.chroma_stft(y=clipData, sr=sampling_rate)
 
     ### Modulation & Reverb Analysis ###
@@ -78,10 +81,12 @@ def extract_features(clipData, sampling_rate):
 
     features["stereo_width"] = stereo_width
 
+    features["peak_to_rms_ratio_mean"]= np.mean(np.max(features["peaks"]) / (np.mean(features["rms_energy"]) + 1e-8))
+
     return features
 
 
-def extract_aggregated_features(clipData,sampling_rate):
+def extract_aggregated_features(clipData,sampling_rate)  -> Dict[str,np.floating]:
     features = extract_features(clipData=clipData, sampling_rate=sampling_rate)
     return {
         "spectral_centroid_mean": np.mean(features["spectral_centroid"]),
@@ -108,14 +113,20 @@ def extract_aggregated_features(clipData,sampling_rate):
         # "crest_factor_mean": np.mean(features["crest_factor"]), Spectral Flatness measurres tonalcomplexity correlation0.93
         #"mfcc1_mean": np.mean(features["mfccs"][0]), high corellation with rms_energy 0.85
         "stereo_width": features["stereo_width"],  # Stereo width estimate
-        "mfcc2_mean": np.mean(features["mfccs"][1]),
+        "mfcc2_mean": np.mean(features["mfccs1"]),
         "chroma_mean": np.mean(features["chroma"]),
         "vibrato_depth": np.var(features["vibrato_depth"]),
         "reverb_tail_length_mean": np.mean(features["reverb_tail_length"]),
         "dynamic_range": features["dynamic_range"],
-        "peak_to_rms_ratio_mean": np.mean(np.max(features["peaks"]) / (np.mean(features["rms_energy"]) + 1e-8))
+        "peak_to_rms_ratio_mean": features["peak_to_rms_ratio_mean"]
     }
 
+
+
+selected_feature_keys = ["spectral_centroid","spectral_bandwidth","spectral_flatness","spectral_contrast","rms_energy","onset_frames", 
+                "onset_times","attack_time","modulation_depth","spectral_rolloff","spectral_flux",
+                  "harmonic","percussive","autocorr","harmonic_distortion_ratio","zero_crossing_rate","stereo_width","mfccs1",
+                    "chroma", "vibrato_depth","reverb_tail_length","dynamic_range","peak_to_rms_ratio_mean" ]
 
 
 

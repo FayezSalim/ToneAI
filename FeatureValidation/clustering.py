@@ -7,15 +7,12 @@ import numpy as np
 import pandas as pd
 from sklearn.discriminant_analysis import StandardScaler
 from sklearn.preprocessing import MinMaxScaler, RobustScaler
-from feature_extraction.enumerate_clips import enumerate_clips
-from feature_extraction.extract_features import extract_aggregated_features
 # from clustering_types.dbscan import dbscan_clustering
 # from clustering_types.hierarchical import hierarchical_clustering
-from feature_extraction.prepare_feature_dataframe import prepare_aggregated_feature_dataframe
-from feature_extraction.validation.clustering_types.dbscan import dbscan_clustering
-from feature_extraction.validation.clustering_types.hierarchical import hierarchical_clustering
-from feature_extraction.validation.clustering_types.kMeans import kmeans_clustering
-import re
+from clustering_types.dbscan import dbscan_clustering
+from clustering_types.hierarchical import hierarchical_clustering
+from clustering_types.kMeans import kmeans_clustering
+from FeatureExtraction import prepare_aggregated_feature_dataframe
 
 
 def cluster_features(audioSourceDirectory,clusteringType:Literal["kmeans","hierarchical","dbscan"],useFreshData:bool=False):
