@@ -5,7 +5,7 @@ import numpy as np
 from scipy.signal import find_peaks
 
 
-def extract_features(clipData, sampling_rate) -> Dict[str, np.floating]:
+def extract_features(clipData, sampling_rate) -> Dict[str, Union[np.floating,np.ndarray[Any,Any]]]:
     
     features = {}
 
@@ -86,7 +86,7 @@ def extract_features(clipData, sampling_rate) -> Dict[str, np.floating]:
     return features
 
 
-def extract_aggregated_features(clipData,sampling_rate)  -> Dict[str,np.floating]:
+def extract_aggregated_features(cliponData,sampling_rate)  -> Dict[str,np.floating]:
     features = extract_features(clipData=clipData, sampling_rate=sampling_rate)
     return {
         "spectral_centroid_mean": np.mean(features["spectral_centroid"]),
@@ -135,4 +135,32 @@ selected_feature_keys = ["spectral_centroid","spectral_bandwidth","spectral_flat
 # - Amp & Speaker Dynamics → spectral_centroid_mean, spectral_bandwidth_mean, and rms_energy_mean provide insight into tonal brightness and power.
 # - Compression & Articulation → attack_time_mean and peak_to_rms_ratio_mean help differentiate compressed vs. dynamic tones.
 # - Tonality & EQ Shape → spectral_contrast_mean, chroma_mean, and mfcc2_mean contribute to harmonic balance.
+
+# Recommended Representations
+# | Feature | Suggested Representation | Reasoning | 
+# | Spectral Centroid | Mean | Captures overall brightness of the signal. | 
+# | Spectral Bandwidth | Mean & Std | Helps model understand spread of frequencies. | 
+# | Spectral Flatness | Mean | Represents tonal vs. noise-like characteristics. | 
+# | Spectral Contrast | Full ndarray | Preserves dynamic changes in contrast across time. | 
+# | RMS Energy | Mean & Std | Captures loudness variations. | 
+# | Onset Frames | Count | Number of detected onsets is more useful than raw values. | 
+# | Onset Times | Full ndarray | Preserves timing of transients. | 
+# | Attack Time | Mean | Represents how quickly a sound reaches peak amplitude. | 
+# | Modulation Depth | Mean & Std | Captures depth of amplitude modulation. | 
+# | Spectral Rolloff | Mean | Represents frequency cutoff point. | 
+# | Spectral Flux | Mean & Std | Measures spectral change over time. | 
+# | Harmonic | Mean | Represents harmonic content. | 
+# | Percussive | Mean | Represents percussive energy. | 
+# | Autocorr | Full ndarray | Preserves periodicity information. | 
+# | Harmonic Distortion Ratio | Mean | Captures distortion characteristics. | 
+# | Zero Crossing Rate | Mean & Std | Useful for detecting noisiness. | 
+# | Stereo Width | Mean | Represents spatial characteristics. | 
+# | MFCCs | Full ndarray | Essential for timbre analysis. | 
+# | Chroma | Full ndarray | Preserves harmonic structure. | 
+# | Vibrato Depth | Mean | Represents vibrato intensity. | 
+# | Reverb Tail Length | Mean | Captures decay characteristics. | 
+# | Dynamic Range | Mean & Std | Represents loudness variation. | 
+# | Peak-to-RMS Ratio | Mean | Captures transient sharpness. | 
+
+
 

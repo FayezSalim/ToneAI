@@ -1,27 +1,17 @@
 import os
-from typing import Any
+from typing import Any, Dict
 import numpy as np
 import pandas as pd
-from enumerate_clips import enumerate_clips
-from extract_features import extract_aggregated_features
+from .enumerate_clips import enumerate_clips
+from .extract_features import extract_aggregated_features,extract_features
+from Helpers import write_json,read_json
 
-
-def prepare_aggregated_feature_dataframe(audioSourceDirectory:str, useFreshData:bool=False):
-    """
-    Prepares a DataFrame with specified feature columns.
-
-    Args:
-        df (pd.DataFrame): The input DataFrame.
-        feature_columns (list): List of columns to include in the feature DataFrame.
-
-    Returns:
-        pd.DataFrame: A DataFrame containing only the specified feature columns.
-    """
+def prepare_aggregated_feature_dataframe(audioSourceDirectory:str, useFreshData:bool=False)-> pd.DataFrame:
     feature_list:list[dict[str, np.floating[Any]]]=[]
 
     clip_names:list[str]=[]
 
-    if useFreshData or not os.path.exists("features.csv"):
+    if useFreshData or not os.path.exists("aggregated_features.csv"):
         # Process each file in the dataset
         for clip_name,clip_data,sampling_rate in enumerate_clips(audioSourceDirectory):
 
@@ -42,8 +32,29 @@ def prepare_aggregated_feature_dataframe(audioSourceDirectory:str, useFreshData:
         df_features = pd.DataFrame(feature_matrix, index=clip_names, columns=columns)
 
 
-        df_features.to_csv("features.csv", index=False)  # Save features to CSV for debugging/reuse
+        df_features.to_csv("aggregated_features.csv", index=False)  # Save features to CSV for debugging/reuse
     else:
-        df_features = pd.read_csv("features.csv")
+        df_features = pd.read_csv("aggregated_features.csv")
     
     return df_features
+
+
+def prepare_features(audioSourceDirectory:str, useFreshData:bool=False)->Dict[str,Dict[str, np.floating]]:
+    feature_list:Dict[str,Dict[str, np.floating]] = dict()
+    
+    if useFreshData or not os.path.exists("features.json"):
+        #process each file 
+        for clip_name,clip_data,sampling_rate in enumerate_clips(audioSourceDirectory):
+            feature_list[clip_name] = extract_features(clip_data,sampling_rate)
+            break
+
+        write_json("features.json",feature_list)
+    else:
+        feature_list = read_json("features.json")
+
+    #TODO potential dataype mismatch np.floating vs float
+    return feature_list
+
+        
+
+

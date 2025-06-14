@@ -21,13 +21,3 @@ class AudioFeatureExtractor(BaseFeaturesExtractor):
 
     def forward(self, obs):
         return self.network(obs)
-
-# Feature extraction function to take guitar only clips after sepratoin using demucs and selction by user
-def extract_audio_features(audio_clip_data,sampling_rate):
-    
-    # Extract meaningful features
-    features  = extract_features(audio_clip_data,sampling_rate)
-
-    # Create feature vector
-    feature_vector = np.hstack([features[key] for key in selected_feature_keys])
-    return feature_vector.astype(np.float32)

@@ -1,0 +1,30 @@
+{
+    "American_Idiot_guitar.mp3_1": {
+        "spectral_centroid": null,
+        "spectral_bandwidth": null,
+        "spectral_flatness": null,
+        "spectral_contrast": null,
+        "rms_energy": null,
+        "onset_frames": null,
+        "onset_times": null,
+        "spectral_flux": null,
+        "attack_time": 0.009841269841269842,
+        "modulation_depth": null,
+        "spectral_rolloff": null,
+        "peaks": null,
+        "harmonic": null,
+        "percussive": null,
+        "harmonic_distortion_ratio": null,
+        "zero_crossing_rate": null,
+        "crest_factor": 6.951483249664307,
+        "mfccs0": null,
+        "mfccs1": null,
+        "chroma": null,
+        "vibrato_depth": null,
+        "reverb_tail_length": null,
+        "dynamic_range": 0.15460625290870667,
+        "autocorr": null,
+        "stereo_width": 0.04694591835141182,
+        "peak_to_rms_ratio_mean": 18113.804700487715
+    }
+}

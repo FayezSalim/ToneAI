@@ -13,73 +13,74 @@ def generateSignalChainOrder(keys: List[str]) -> List[List[str]]:
     
     return signal_chain_order
 
+def initialize_discrete_action_space()->DiscreteActionSpace:
+    # Load the Helix models JSON file
+    with open("helix_models_to_process.json", "r", encoding="utf-8") as file:
+        helix_data= json.load(file)
 
-# Load the Helix models JSON file
-with open("helix_models_to_process.json", "r", encoding="utf-8") as file:
-    helix_data= json.load(file)
+    # Define the action space structure
+    components: Dict[str, Dict[str,HelixModel]] = {}
 
-# Define the action space structure
-components: Dict[str, Dict[str,HelixModel]] = {}
+    for component in helix_data:
 
-for component in helix_data:
+        components[component['name']]= dict()
 
-    components[component['name']]= dict()
+        for category in component['subcategories']:
 
-    for category in component['subcategories']:
+            ## sub category distinction matters?
+            for model in category['models']:
+                
+                if model.get('id')==None or components[component['name']].get(model['id'])!=None:
+                    continue                                                 
+                
+                helixModel = HelixModel(model['name'], model['id'])            
 
-        ## sub category distinction matters?
-        for model in category['models']:
-            
-            if model.get('id')==None or components[component['name']].get(model['id'])!=None:
-                continue                                                 
-            
-            helixModel = HelixModel(model['name'], model['id'])            
+                for param in model['parameters']:
+                    helixModelParam = HelixModelParam[float](
+                        name=param['name'],
+                        id=param['id'],
+                        defaultValue=param['defaultValue'],
+                        minValue=param.get('min', None),
+                        maxValue=param.get('max', None)
+                    )
+                    helixModel.parameters[param['id']] = helixModelParam
 
-            for param in model['parameters']:
-                helixModelParam = HelixModelParam[float](
-                    name=param['name'],
-                    id=param['id'],
-                    defaultValue=param['defaultValue'],
-                    minValue=param.get('min', None),
-                    maxValue=param.get('max', None)
-                )
-                helixModel.parameters[param['id']] = helixModelParam
+                components[component['name']][model['id']]=helixModel
 
-            components[component['name']][model['id']]=helixModel
+    discreteActionSpace = DiscreteActionSpace()
 
-discreteActionSpace = DiscreteActionSpace()
+    for comp_key, comp in components.items():
+        discreteActionSpace.components[comp_key+ "_models"] = list([model for model in comp])
 
-for comp_key, comp in components.items():
-    discreteActionSpace.components[comp_key+ "_models"] = list([model for model in comp])
+    discreteActionSpace.signal_chain_order = generateSignalChainOrder(list(components.keys()))
 
-discreteActionSpace.signal_chain_order = generateSignalChainOrder(list(components.keys()))
+    # selectedComp = dict()
+    # selectedComp["Amp"]="HD2_AmpWhoWatt100"
+    # selectedComp["Cab"]="HD2_CabMicIr_1x10USPrincess"
+    # selectedComp["Distortion"]="HD2_DistDerangedMaster"
 
-selectedComp = dict()
-selectedComp["Amp"]="HD2_AmpWhoWatt100"
-selectedComp["Cab"]="HD2_CabMicIr_1x10USPrincess"
-selectedComp["Distortion"]="HD2_DistDerangedMaster"
-
-cs = deriveContinousActionSpace(selectedComp,components)
-
-
-# action_space = {
-#     "discrete": {
-#         "amp_model": list([for amps in components['amps']]),
-#         "cab_model": list(helix_data["cabs"].keys()),
-#         "distortion_model": list(helix_data["distortions"].keys()),
-#         "signal_chain_order": [
-#             ["amp", "cab", "distortion"],
-#             ["distortion", "cab", "amp"],
-#             ["cab", "amp", "distortion"]
-#         ]
-#     },
-#     "continuous": {}
-# }
+    # cs = deriveContinousActionSpace(selectedComp,components)
 
 
+    # action_space = {
+    #     "discrete": {
+    #         "amp_model": list([for amps in components['amps']]),
+    #         "cab_model": list(helix_data["cabs"].keys()),
+    #         "distortion_model": list(helix_data["distortions"].keys()),
+    #         "signal_chain_order": [
+    #             ["amp", "cab", "distortion"],
+    #             ["distortion", "cab", "amp"],
+    #             ["cab", "amp", "distortion"]
+    #         ]
+    #     },
+    #     "continuous": {}
+    # }
 
-# Print action space structure
-import pprint
-pprint.pprint(discreteActionSpace)
+
+
+    # Print action space structure
+    # import pprint
+    # pprint.pprint(discreteActionSpace)
+    return discreteActionSpace
 
 
